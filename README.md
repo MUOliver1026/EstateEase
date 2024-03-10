@@ -18,7 +18,7 @@ To get started with the project, follow these steps:
 2. Install dependencies: `npm install`
 3. Configure environment variables: Create a `.env` file based on the provided `.env.example` and fill in the necessary values.
 4. Start the development server: `npm run dev`
-5. Open your browser and visit: `http://localhost:3000`
+5. Open your browser and visit: `http://localhost:5173`
 
 ## Technologies Used
 
