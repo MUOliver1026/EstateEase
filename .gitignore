@@ -36,3 +36,4 @@
 /client/next-env.d.ts
 
 /node_modules
+.env
