@@ -16,8 +16,20 @@ const app = express();
 
 app.use(express.json());
 
+let allowCrossDomain = function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', "*");
+    res.header('Access-Control-Allow-Headers', "*");
+    next();
+  }
+  app.use(allowCrossDomain);
+
 app.use(cors({
-    origin: '*',
+    credentials: true,
+    exposedHeaders: 'Authorization',
+    origin: [
+        'http://localhost:3000',
+        'http://localhost:8000',
+    ],
     methods: 'GET,POST,PUT,DELETE',
     allowedHeaders: 'Content-Type',
 }))

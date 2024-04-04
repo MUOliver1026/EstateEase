@@ -1,13 +1,74 @@
-import React from 'react';
-import Signin from '../components/signin';
+'use client'
+
+import Link from 'next/link'
+import React from 'react'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function page() {
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: ''
+  })
+  const [error, setError] = useState(null);
+  const [loading, setLoding] = useState(false);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value
+    })
+  }
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoding(true);
+    const res = await fetch('api/auth/signin', 
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include',
+      body: JSON.stringify(formData),
+    });
+    const data = await res.json();
+    if (data.success === false) {
+      setError(data.message);
+      setLoding(false);
+      return;
+    }
+    setLoding(false);
+    setError(null);
+    router.push('/');
+    console.log(data);
+  }
   return (
-    <div>
-      <h1 className="text-3xl font-bold underline">
+    <div className='p-3 max-w-lg mx-auto'>
+      <h1 className='text-3xl text-center font-semibold
+      my-7'>
         Sign In
       </h1>
-      <Signin />
+      <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
+        <input type='email' placeholder='email' 
+        className='border p-3 rouded-lg' id='email' 
+        onChange={handleChange} />
+        <input type='password' placeholder='password' 
+        className='border p-3 rouded-lg' id='password' 
+        onChange={handleChange} />
+        <button disabled={loading} className='bg-slate-700 text-white p-3 
+        rounded-lg uppercase hover:opacity-95 
+        disabled:opacity-80'>
+          {loading ? 'Loading...' : 'Sign In'}
+        </button>
+      </form>
+      <div className='flex gap-2 mt-5'>
+        <p>Dont have an account?</p>
+        <Link href='/sign-up'>
+          <span className='text-blue-700'>Sign Up</span>
+        </Link>
+      </div>
+      {error && <p className='text-red-500 mt-5'>{error}</p>}
     </div>
-  );
+  )
 }
