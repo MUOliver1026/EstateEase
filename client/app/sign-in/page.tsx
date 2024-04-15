@@ -1,9 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import React from 'react'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useAppSelector, useAppDispatch, useAppStore } from '@/lib/hooks'
+import { signInStart, signInFailure, signInSuccess } from '@/lib/user/userSlice'
 
 export default function page() {
   const router = useRouter();
@@ -12,8 +13,8 @@ export default function page() {
     email: '',
     password: ''
   })
-  const [error, setError] = useState(null);
-  const [loading, setLoding] = useState(false);
+  const { loading, error } = useAppSelector((state: any) => state.user);
+  const dispatch = useAppDispatch()
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -22,7 +23,7 @@ export default function page() {
   }
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoding(true);
+    dispatch(signInStart());
     const res = await fetch('api/auth/signin', 
     {
       method: 'POST',
@@ -34,14 +35,13 @@ export default function page() {
     });
     const data = await res.json();
     if (data.success === false) {
-      setError(data.message);
-      setLoding(false);
+      dispatch(signInFailure(data.message));
       return;
     }
-    setLoding(false);
-    setError(null);
-    router.push('/');
+    dispatch(signInSuccess(data));
+    // show user info when successfully signed in
     console.log(data);
+    router.push('/');
   }
   return (
     <div className='p-3 max-w-lg mx-auto'>
