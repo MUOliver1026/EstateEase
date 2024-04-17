@@ -4,6 +4,7 @@ import Link from 'next/link'
 import React from 'react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import OAuth from '../components/oauth'
 
 export default function page() {
   const router = useRouter();
@@ -63,6 +64,7 @@ export default function page() {
         disabled:opacity-80'>
           {loading ? 'Loading...' : 'Sign Up'}
         </button>
+        <OAuth />
       </form>
       <div className='flex gap-2 mt-5'>
         <p>Have an account?</p>

@@ -3,8 +3,9 @@
 import Link from 'next/link'
 import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAppSelector, useAppDispatch, useAppStore } from '@/lib/hooks'
+import { useAppSelector, useAppDispatch } from '@/lib/hooks'
 import { signInStart, signInFailure, signInSuccess } from '@/lib/user/userSlice'
+import OAuth from '../components/oauth'
 
 export default function page() {
   const router = useRouter();
@@ -61,6 +62,7 @@ export default function page() {
         disabled:opacity-80'>
           {loading ? 'Loading...' : 'Sign In'}
         </button>
+        <OAuth />
       </form>
       <div className='flex gap-2 mt-5'>
         <p>Dont have an account?</p>
