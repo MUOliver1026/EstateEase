@@ -1,18 +1,6 @@
 const API_URL = process.env.API_URL
 
 /** @type {import('next').NextConfig} */
-// const rewrites = async () => {
-//     return [
-//         {
-//             source: '/api',
-//             destination: `${API_URL}`,
-//         },
-//         {
-//         source: '/api/:path*',
-//         destination: `${API_URL}/:path*/`,
-//         },
-//     ];
-// };
 
 const redirects = async () => {
     return [
@@ -37,10 +25,13 @@ const nextConfig = {
                 { key: "Access-Control-Allow-Origin", value: `${API_URL}/api` }, // replace this your actual origin
                 { key: "Access-Control-Allow-Methods", value: "GET,DELETE,PATCH,POST,PUT" },
                 { key: "Access-Control-Allow-Headers", value: "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version" },
-            ]
-        }
-    ]
-}
+                ]
+            }
+        ]
+    },
+    images: {
+        domains: ["lh3.googleusercontent.com"],
+    },
 };
 
 module.exports = nextConfig;
