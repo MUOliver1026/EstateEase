@@ -1,16 +1,18 @@
 "use client";
 import { RootState } from '@/lib/store';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/navigation'
 import { useLayoutEffect, useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useRef } from 'react';
 import Image from 'next/image';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { app } from '../firebase';
-import { updateUserStart, updateUserSuccess, updateUserFailure } from '@/lib/user/userSlice';
+import { updateUserStart, updateUserSuccess, updateUserFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure } from '@/lib/user/userSlice';
 import { useDispatch } from 'react-redux';
+import router from 'next/router';
 
 const Profile = () => {
+  const router = useRouter();
   const dispatch = useDispatch();
   const fileRef = useRef<HTMLInputElement>(null);
   const { currentUser, loading, error } = useSelector((state: RootState) => state.user);
@@ -27,7 +29,7 @@ const Profile = () => {
     useLayoutEffect(() => {
       const isAuth = currentUser !== null;
       if(!isAuth){
-        redirect("/sign-in")
+        router.push("/sign-in");
       }
     }, [])
    
@@ -91,6 +93,28 @@ const Profile = () => {
         }
         dispatch(updateUserSuccess(data));
         setUpdateSuccess(true);
+      } catch (error: any) {
+        dispatch(updateUserFailure(error.message));
+      }
+    }
+
+    const handleDeleteUser = async () => {
+      try {
+        dispatch(deleteUserStart());
+        const res = await fetch(`/api/user/delete/${currentUser?._id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+        });
+        const data = await res.json();
+        if (data.success === false) {
+          dispatch(deleteUserFailure(data.message));
+          return;
+        }
+        dispatch(deleteUserSuccess());
+        router.push("/sign-in");
       } catch (error: any) {
         dispatch(updateUserFailure(error.message));
       }
@@ -161,7 +185,7 @@ const Profile = () => {
           </button>
         </form>
         <div className='flex justify-between mt-5'>
-          <span className='text-red-700 cursor-pointer'>Delete Account</span>
+          <span onClick={handleDeleteUser} className='text-red-700 cursor-pointer'>Delete Account</span>
           <span className='text-red-700 cursor-pointer'>Sign Out</span>
         </div>
 
