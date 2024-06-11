@@ -7,7 +7,9 @@ import { useRef } from 'react';
 import Image from 'next/image';
 import { getDownloadURL, getStorage, ref, uploadBytesResumable } from 'firebase/storage';
 import { app } from '../firebase';
-import { updateUserStart, updateUserSuccess, updateUserFailure, deleteUserStart, deleteUserSuccess, deleteUserFailure } from '@/lib/user/userSlice';
+import { updateUserStart, updateUserSuccess, updateUserFailure, 
+  deleteUserStart, deleteUserSuccess, deleteUserFailure,
+  signOutUserStart, signOutUserSuccess, signOutUserFailure } from '@/lib/user/userSlice';
 import { useDispatch } from 'react-redux';
 import router from 'next/router';
 
@@ -119,6 +121,24 @@ const Profile = () => {
         dispatch(updateUserFailure(error.message));
       }
     }
+
+    const handleSignOut = async () => {
+      try {
+        dispatch(signOutUserStart());
+        const res = await fetch(`/api/auth/signout`, {
+          credentials: "include",
+        });
+        const data = await res.json();
+        if (data.success === false) {
+          dispatch(signOutUserFailure(data.message));
+          return;
+        }
+        dispatch(signOutUserSuccess());
+        router.push("/sign-in");
+      } catch (error: any) {
+        dispatch(signOutUserFailure(error.message));
+      }
+    }
   return (
       <div className='p-3 max-w-lg mx-auto'>
         <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
@@ -186,7 +206,7 @@ const Profile = () => {
         </form>
         <div className='flex justify-between mt-5'>
           <span onClick={handleDeleteUser} className='text-red-700 cursor-pointer'>Delete Account</span>
-          <span className='text-red-700 cursor-pointer'>Sign Out</span>
+          <span onClick={handleSignOut} className='text-red-700 cursor-pointer'>Sign Out</span>
         </div>
 
         <p className='text-red-700 mt-5'>{error ? error : ''}</p>
